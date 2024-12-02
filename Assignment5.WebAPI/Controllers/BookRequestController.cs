@@ -1,4 +1,5 @@
-﻿using Assignment5.Domain.Models;
+﻿using Asp.Versioning;
+using Assignment5.Domain.Models;
 using Assignment7.Application.Interfaces.IService;
 using Assignment7.Persistence.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +10,9 @@ using System.Security.Claims;
 
 namespace Assignment7.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
+    [Route("api/v{version:apiVersion}/[Controller]")]
     [ApiController]
     public class BookRequestController : ControllerBase
     {
@@ -19,26 +22,34 @@ namespace Assignment7.WebAPI.Controllers
             _bookRequestService = bookRequestService;
         }
 
-        [Authorize(Roles = "Library Manager")]
+        [MapToApiVersion("1.0")]
+        [Authorize(Roles = "Library Manager, Librarian, Library User")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Bookrequest bookRequest)
         {
             if (bookRequest == null)
             {
-                return BadRequest("Invalid request");
+                return BadRequest(new { message = "Invalid request" });
             }
 
-            var addBookRequest = await _bookRequestService.AddBookRequestAsync(bookRequest);
+            try
+            {
+                var addBookRequest = await _bookRequestService.AddBookRequestAsync(bookRequest);
 
-            return Ok(addBookRequest);
+                return Ok(new { status = "Success!", data = addBookRequest });
+            } catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
+        [MapToApiVersion("1.0")]
         [HttpGet]
         public async Task<IActionResult> GetAllBookRequest()
         {
             var requests = await _bookRequestService.GetAllBookRequestAsync();
 
-            return Ok(requests);
+            return Ok(new {status = "Success!", data = requests });
         }
     }
 }

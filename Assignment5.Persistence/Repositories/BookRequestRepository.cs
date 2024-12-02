@@ -20,14 +20,14 @@ namespace Assignment7.Persistence.Repositories
 
         public async Task<Bookrequest> AddBookRequestAsync(Bookrequest bookRequest)
         {
-            _context.BookRequests.Add(bookRequest);
+            _context.Bookrequests.Add(bookRequest);
             await _context.SaveChangesAsync();
             return bookRequest;
         }
 
         public async Task<IEnumerable<Bookrequest>> GetAllBookRequestAsync()
         {
-            return await _context.BookRequests.ToListAsync();
+            return await _context.Bookrequests.ToListAsync();
         }
 
 

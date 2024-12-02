@@ -1,25 +1,27 @@
-﻿using Assignment5.Application.DTOs.Account;
-using Assignment5.Application.Interfaces.IService;
+﻿using Asp.Versioning;
+using Assignment7.Application.DTOs.Account;
 using Assignment7.Application.Interfaces.IService;
 using Assignment7.Domain.Models.Mail;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Assignment5.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
+    [Route("api/v{version:apiVersion}/[Controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly IEmailService _emailService;
 
-        public AuthController(IAuthService authService, IEmailService emailService)
+        public AuthController(IAuthService authService)
         {
             _authService = authService;
-            _emailService = emailService;
         }
 
+        [MapToApiVersion("1.0")]
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterModel model)
         {
@@ -27,17 +29,17 @@ namespace Assignment5.WebAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             var result = await _authService.SignUpAsync(model);
 
-            if (result.Status == "Error" || result.Status == "SuccessWithWarning")
+            if (result.Status == "Error")
             {
-                return BadRequest(result.Message);
+                return BadRequest(new AuthResponse { Status = "Error", Message = result.Message });
             }
 
             return Ok(result);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync([FromBody] LoginModel model)
 
@@ -50,13 +52,29 @@ namespace Assignment5.WebAPI.Controllers
             var result = await _authService.LoginAsync(model);
 
             if (result.Status == "Error")
+            {
+                return Unauthorized(new { status = result.Status, message = result.Message });
+            }
 
-                return BadRequest(result.Message);
-
+            SetRefreshTokenCookie("AuthToken", result.Token, result.TokenExpiresOn);
+            SetRefreshTokenCookie("RefreshToken", result.RefreshToken, result.RefreshTokenExpiration);
             return Ok(result);
 
         }
+        private void SetRefreshTokenCookie(string tokenType, string? token, DateTime? expires)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,  // Hanya dapat diakses oleh server
+                Secure = true,    // Hanya dikirim melalui HTTPS
+                SameSite = SameSiteMode.Strict, // Cegah serangan CSRF
+                Expires = DateTime.Now.AddDays(3) // Waktu kadaluarsa token
+            };
 
+            Response.Cookies.Append(tokenType, token, cookieOptions);
+        }
+
+        [MapToApiVersion("1.0")]
         [HttpPost("set-role")]
         public async Task<IActionResult> CreateRoleAsync(string rolename)
         {
@@ -64,6 +82,7 @@ namespace Assignment5.WebAPI.Controllers
             return Ok(result);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpPost("assign-role")]
         public async Task<IActionResult> AssignToRoleAsync(string userName, string rolename)
         {
@@ -71,22 +90,37 @@ namespace Assignment5.WebAPI.Controllers
             return Ok(result);
         }
 
+        [MapToApiVersion("1.0")]
+        [Authorize]
         [HttpPost("logout")]
-        public async Task<IActionResult> Logout([FromBody] LogoutModel model)
+        public async Task<IActionResult> Logout()
         {
-            if (string.IsNullOrEmpty(model.Username))
+            try
             {
-                return BadRequest(new ResponseModel { Status = "Error", Message = "Username is required!" });
+                // Hapus cookie
+                Response.Cookies.Delete("AuthToken", new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict
+                });
+
+                Response.Cookies.Delete("RefreshToken", new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict
+                });
+
+                return Ok("Logout successfully");
             }
-
-            var response = await _authService.LogoutAsync(model.Username);
-
-            if (response.Status == "Success")
+            catch (Exception ex)
             {
-                return Ok(response);
+                return StatusCode(500, "An error occurred during logout");
             }
-            return BadRequest(response);
         }
+
+
 
     }
 }

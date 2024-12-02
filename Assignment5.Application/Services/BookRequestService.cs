@@ -26,17 +26,44 @@ namespace Assignment7.Application.Services
         }
         public async Task<Bookrequest> AddBookRequestAsync(Bookrequest bookRequest)
         {
+            // Check if bookRequest is null
+            if (bookRequest == null)
+            {
+                throw new ArgumentNullException(nameof(bookRequest), "Book request cannot be null.");
+            }
+
+            // Check if Process is null
+            if (bookRequest.Process == null)
+            {
+                throw new ArgumentNullException(nameof(bookRequest.Process), "Process cannot be null.");
+            }
+
             // Get current user ID from HttpContext
-            var userName = _httpContextAccessor.HttpContext!.User.Identity!.Name;
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext == null)
+            {
+                throw new InvalidOperationException("HttpContext is not available.");
+            }
 
-            var user = await _userManager.FindByNameAsync(userName!);
+            var userName = httpContext.User.Identity?.Name;
+            if (string.IsNullOrEmpty(userName))
+            {
+                throw new InvalidOperationException("User is not authenticated.");
+            }
 
-            var userId = user!.Id;
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                throw new InvalidOperationException("User not found.");
+            }
+
+            var userId = user.Id;
 
             bookRequest.Process.Requesterid = userId;
 
             return await _bookRequestRepository.AddBookRequestAsync(bookRequest);
         }
+
 
         public async Task<IEnumerable<Bookrequest>> GetAllBookRequestAsync()
         {

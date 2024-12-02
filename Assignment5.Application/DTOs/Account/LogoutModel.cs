@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Assignment5.Application.DTOs.Account
+namespace Assignment7.Application.DTOs.Account
 {
     public class LogoutModel
     {

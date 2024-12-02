@@ -1,19 +1,18 @@
-﻿using Assignment5.Application.DTOs;
-using Assignment5.Domain.Models;
+﻿using Assignment5.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Assignment5.Application.Interfaces.IRepositories
+namespace Assignment7.Application.Interfaces.IRepositories
 {
     public interface IUserRepository
     {
         Task<User> AddUser(User user);
-        Task<IEnumerable<User>> GetAllUsers(paginationDto pagination);
+        Task<IEnumerable<User>> GetAllUsers();
         Task<User> GetUserById(int userId);
-        Task<bool> UpdateUser(int userId, User user);
+        Task<bool> UpdateUser(User user);
         Task<bool> DeleteUser(int userId);
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Assignment5.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Assignment7.Persistence.Models;
@@ -46,7 +47,7 @@ public partial class Process
     [ForeignKey("Requesterid")]
     [InverseProperty("Processes")]
     [JsonIgnore]
-    public virtual AspNetUser? Requester { get; set; }
+    public virtual AppUser? Requester { get; set; }
 
     [ForeignKey("Workflowid")]
     [InverseProperty("Processes")]
