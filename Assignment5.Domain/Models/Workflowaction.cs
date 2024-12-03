@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Assignment5.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Assignment7.Persistence.Models;
+namespace Assignment7.Domain.Models;
 
 [Table("workflowactions")]
 public partial class Workflowaction

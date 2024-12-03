@@ -1,5 +1,4 @@
 ﻿using Assignment7.Domain.Models;
-using Assignment7.Persistence.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;

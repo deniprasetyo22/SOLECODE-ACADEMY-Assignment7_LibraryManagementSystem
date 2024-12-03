@@ -16,9 +16,11 @@ namespace Assignment5.WebAPI.Controllers
     public class BookController : ControllerBase
     {
         private readonly IBookService _bookService;
-        public BookController(IBookService bookService)
+        private readonly IWebHostEnvironment _environment;
+        public BookController(IBookService bookService, IWebHostEnvironment environment)
         {
             _bookService = bookService;
+            _environment = environment;
         }
 
         /// <summary>
@@ -238,5 +240,6 @@ namespace Assignment5.WebAPI.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
     }
 }

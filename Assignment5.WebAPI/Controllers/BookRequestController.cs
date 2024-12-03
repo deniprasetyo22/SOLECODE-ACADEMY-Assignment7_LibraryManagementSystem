@@ -1,7 +1,7 @@
 ﻿using Asp.Versioning;
 using Assignment5.Domain.Models;
 using Assignment7.Application.Interfaces.IService;
-using Assignment7.Persistence.Models;
+using Assignment7.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -44,10 +44,37 @@ namespace Assignment7.WebAPI.Controllers
         }
 
         [MapToApiVersion("1.0")]
+        [Authorize(Roles = "Librarian, Library Manager")]
+        [HttpPut("approval/{processId}")]
+        public async Task<IActionResult> ApprovalAsync(int processId, [FromBody] Process process)
+        {
+            if (process == null)
+            {
+                return BadRequest(new { message = "Invalid request data." });
+            }
+
+            try
+            {
+                await _bookRequestService.ApprovalAsync(processId, process);
+                return Ok(new { status = "Success!", message = "Book request processed successfully." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                return StatusCode(500, new { message = "An internal error occurred." });
+            }
+        }
+
+        [MapToApiVersion("1.0")]
+        [Authorize(Roles = "Librarian, Library Manager")]
         [HttpGet]
         public async Task<IActionResult> GetAllBookRequest()
         {
-            var requests = await _bookRequestService.GetAllBookRequestAsync();
+            var requests = await _bookRequestService.GetAllBookRequestsAsync();
 
             return Ok(new {status = "Success!", data = requests });
         }

@@ -1,4 +1,4 @@
-﻿using Assignment7.Persistence.Models;
+﻿using Assignment7.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

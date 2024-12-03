@@ -1,6 +1,5 @@
 ﻿using Assignment5.Domain.Models;
 using Assignment7.Domain.Models;
-using Assignment7.Persistence.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;

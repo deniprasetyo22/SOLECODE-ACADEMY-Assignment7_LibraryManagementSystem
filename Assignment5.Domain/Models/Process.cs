@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using Assignment5.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Assignment7.Persistence.Models;
+namespace Assignment7.Domain.Models;
 
 [Table("process")]
 public partial class Process
@@ -36,22 +36,19 @@ public partial class Process
     [Column("requestdate", TypeName = "timestamp without time zone")]
     public DateTime? Requestdate { get; set; } = DateTime.Now;
 
-    [InverseProperty("Process")] 
+    [InverseProperty("Process")]
     public virtual ICollection<Bookrequest> Bookrequests { get; set; } = new List<Bookrequest>();
 
     [ForeignKey("Currentstepid")]
     [InverseProperty("Processes")]
-    [JsonIgnore]
     public virtual Workflowsequence? Currentstep { get; set; }
 
     [ForeignKey("Requesterid")]
     [InverseProperty("Processes")]
-    [JsonIgnore]
     public virtual AppUser? Requester { get; set; }
 
     [ForeignKey("Workflowid")]
     [InverseProperty("Processes")]
-    [JsonIgnore]
     public virtual Workflow? Workflow { get; set; }
 
     [InverseProperty("Request")]

@@ -6,7 +6,7 @@ using Assignment5.Domain.Models;
 using Assignment7.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Assignment7.Persistence.Models;
+namespace Assignment7.Domain.Models;
 
 [Table("workflowsequences")]
 public partial class Workflowsequence

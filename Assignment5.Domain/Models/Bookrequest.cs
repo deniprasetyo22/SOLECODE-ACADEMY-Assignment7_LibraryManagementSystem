@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
-namespace Assignment7.Persistence.Models;
+namespace Assignment7.Domain.Models;
 
 [Table("bookrequest")]
 public partial class Bookrequest

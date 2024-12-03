@@ -1,4 +1,4 @@
-﻿using Assignment7.Persistence.Models;
+﻿using Assignment7.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +10,7 @@ namespace Assignment7.Application.Interfaces.IRepositories
     public interface IBookRequestRepository
     {
         Task<Bookrequest> AddBookRequestAsync(Bookrequest bookRequest);
-        Task<IEnumerable<Bookrequest>> GetAllBookRequestAsync();
+        Task<IEnumerable<Bookrequest>> GetAllBookRequestsAsync();
+        Task<Bookrequest> GetBookRequestByIdAsync(int id);
     }
 }
